@@ -89,6 +89,8 @@ class TsrCategory2Xml():
         tag = self.xmlGenTag(secItem.label)
 
         self.xmlWriteString("<%s>\n\n"%tag)
+
+        print secItem.label, offStart, offEnd
         self.xmlCopyData(offStart, offEnd)
         self.xmlWriteString("</%s>\n\n"%tag)
         self.inOffset = offEnd
@@ -105,13 +107,13 @@ class TsrCategory2Xml():
             return label.replace("&", "and").replace(" ", "_").replace("/","_")
 
     def xmlOutput(self):
-        tsrCategory = self.parser.tsrCategory
+        tsrCategory = self.parser.tsrCatRoot
 
         xmlDesc = r'<?xml version="1.0" encoding="ISO-8859-1"?>'
 
         self.xmlWriteString(xmlDesc+"\n")
         self.xmlWriteString("<root>\n")
-        for cat in tsrCategory:
+        for cat in tsrCategory.subEntry:
             offStart = cat.offStart
             offEnd = cat.offEnd
             if self.inOffset < offStart:
@@ -121,7 +123,7 @@ class TsrCategory2Xml():
             tag = self.xmlGenTag(cat.label)
 
             self.xmlWriteString("<%s>\n\n"%tag)
-            for secItem in cat.section:
+            for secItem in cat.subEntry:
                 self.xmlSectionOutput(secItem)
             self.xmlWriteString("</%s>\n\n"%tag)
 
@@ -136,12 +138,9 @@ class TsrCategory2Xml():
         self.inFd.seek(start)
         strTmp = self.inFd.read(end - start)
 
-
         if  myConfiguration.xmlValidate:
-            strTmp = strTmp.replace("&", "&amp;")
-            strTmp = strTmp.replace("<", "&lt;")
-            strTmp = strTmp.replace(">", "&gt;")
-            strTmp = strTmp.replace("\n", "\r\n")
+            strTmp = strTmp.replace("&", "&amp;").replace("<", "&lt;"). \
+                replace("\"", "&quot;").replace(">", "&gt;")
 
 
         self.outFd.write(strTmp)
@@ -168,96 +167,87 @@ class TsrElemNodeEntry():
         self.offEnd = 0
         self.lineStart = 0
         self.lineEnd = 0
+        self.subEntry = []
+        self.isOpen = False
+        self.curSubNode = None
+
         self.entryTagOpen(filePosInfo)
+
+
+    def updateEntry(self, isOpen, label, filePosInfo):
+        #catStr, sectionStr, isOpen = catInfo
+        isTagOpen = False
+
+        curNode = self.curSubNode
+        if curNode and curNode.isEntryMatch(label):
+            pass
+        else:
+            self.createNewEntry(label, filePosInfo)
+
+        if isOpen:
+            isTagOpen = True
+            print "open: ", label, filePosInfo
+            self.curSubNode.entryTagOpen(filePosInfo)
+
+        else:
+            print "close: ", label, filePosInfo
+            self.curSubNode.entryTagClose(filePosInfo)
+
+        return self.curSubNode
+
+    def getCurSubNode(self):
+        return self.curSubNode
+
+    def createNewEntry(self, label, filePosInfo):
+        newNode = TsrElemNodeEntry(label, filePosInfo)
+        self.subEntry.append(newNode)
+        self.curSubNode = newNode
+        return newNode
 
     def initEntry(self ):
         pass
-
-    def updateEntry(self):
-        pass
+    #
+    # def updateEntry(self):
+    #     pass
 
     def entryTagOpen(self, filePosInfo):
         offStart, offEnd, iLine = filePosInfo
         self.offStart = offStart
         self.lineStart = iLine
+        self.isOpen = True
 
     def entryTagClose(self, filePosInfo):
         offStart, offEnd, iLine = filePosInfo
         self.offEnd = offEnd
         self.lineEnd = iLine
+        self.isOpen = False
 
     def isEntryMatch(self, label):
         if self.label == label:
             return True
         return False
 
-    def dumpEntryInfo(self, level):
+    def dumpNodeInfo(self, level):
         pad = "".join(['    ' for i in range(level)])
         outFormat = "%-*s  from %d to %d "
         print pad, outFormat%(50-len(pad), self.label, self.lineStart + 1 , self.lineEnd + 1)
 
+    def dumpEntryInfo(self, level):
+        self.dumpNodeInfo(level)
 
-class SectionEntry(TsrElemNodeEntry):
-    def __init__(self, label, filePosInfo):
-        TsrElemNodeEntry.__init__(self, label, filePosInfo)
-
-
-class CategoryEntry(TsrElemNodeEntry):
-    def __init__(self, label, filePosInfo):
-        TsrElemNodeEntry.__init__(self, label,filePosInfo)
-        self.section = []
-
-    def updateSectionEntry(self, catInfo, filePosInfo):
-        catStr, sectionStr, isStart = catInfo
-
-        isTagOpen = False
-
-        if isStart:
-            currentSection = SectionEntry(sectionStr, filePosInfo)
-            self.section.append(currentSection)
-            isTagOpen = True
-        else:
-            currentSection = self.section[-1]
-            if not currentSection.isEntryMatch(sectionStr):
-                print "addSectionEntry  error!!!!"
-
-            currentSection.entryTagClose(filePosInfo)
-            self.entryTagClose(filePosInfo)
-
-        return isTagOpen
-
-    def dumpCategoryEntry(self):
-        self.dumpEntryInfo(0)
-
-        for secItem in self.section:
-            secItem.dumpEntryInfo(1)
+        for subNode in self.subEntry:
+            subNode.dumpEntryInfo(level + 1)
 
 
 class TsrFileParser():
     def __init__(self, fileName):
-        self.tsrCategory = []
+        self.tsrCatRoot = TsrElemNodeEntry("root", (0,0,0))
         self.outRangeCat = None
         self.isTagOpen = False
         self.parseTsrFile(fileName)
 
-
     def updateCategoryEntry(self, catInfo, filePosInfo):
-
-        currentCat = None
-        if len(self.tsrCategory):
-            currentCat = self.tsrCategory[-1]
-
-        if currentCat:
-            if not currentCat.isEntryMatch(catInfo[0]):
-                currentCat = CategoryEntry(catInfo[0], filePosInfo)
-                self.tsrCategory.append(currentCat)
-
-        else:
-            currentCat = CategoryEntry(catInfo[0], filePosInfo)
-            self.tsrCategory.append(currentCat)
-
-        isTagOpen = currentCat.updateSectionEntry(catInfo, filePosInfo)
-        return isTagOpen
+        return self.tsrCatRoot.updateEntry(catInfo, filePosInfo)
 
     def getCategory(self, lineStr, offStart, offEnd, iLine):
         #System : Status_START
@@ -288,30 +278,36 @@ class TsrFileParser():
                 g = m.groups()
                 if g[-1] == 'START':
                     catInfo = [g[0], g[1], 1]
+                    isOpen = 1
                 else:
                     catInfo = [g[0], g[1], 0]
+                    isOpen = 0
 
                 findMatch = True
 
-                if self.outRangeCat:
-                    self.outRangeCat.entryTagClose([filePosInfo[0], filePosInfo[0], filePosInfo[2]-1])
-                    self.outRangeCat = None
+                if isOpen and self.isTagOpen:
+                    # self.outRangeCat.entryTagClose([filePosInfo[0], filePosInfo[0], filePosInfo[2]-1])
+                    # self.outRangeCat = None
+                    if self.tsrCatRoot.getCurSubNode().isEntryMatch("unknown"):
+                        self.tsrCatRoot.updateEntry(0, "unknown", [filePosInfo[0], filePosInfo[0], filePosInfo[2]-1])
 
-                self.isTagOpen = self.updateCategoryEntry(catInfo, filePosInfo)
+                curNode = self.tsrCatRoot.updateEntry(isOpen, g[0], filePosInfo)
+                curNode = curNode.updateEntry(isOpen, g[1], filePosInfo)
+                self.isTagOpen = isOpen
 
         if not self.isTagOpen and not findMatch:
 
             if myConfiguration.parseOutRangedCat:
                 return
 
-            # if lineStr.strip() != "":
-            #
-            #     if not self.outRangeCat:
-            #         self.outRangeCat =  CategoryEntry("unknown", filePosInfo)
-            #         self.tsrCategory.append(self.outRangeCat)
-            #
-            #     print iLine, lineStr.strip()
-            #self.index += 1
+            if lineStr.strip() != "":
+                self.tsrCatRoot.updateEntry(1, "unknown", filePosInfo)
+                self.isTagOpen = True
+                # if not self.outRangeCat:
+                #     self.outRangeCat = self.tsrCatRoot.createNewEntry("unknown", filePosInfo)
+
+
+                #print iLine, lineStr.strip()
 
     def parseTsrFile(self, fileName):
         fd = open(fileName, "rU")
@@ -330,8 +326,7 @@ class TsrFileParser():
         #fd.close()
 
     def dumpCategory(self):
-        for cat in self.tsrCategory:
-            cat.dumpCategoryEntry()
+        self.tsrCatRoot.dumpEntryInfo(0)
 
     def writeCategoryInfo(self, cat, writer):
         fd = self.fd
@@ -384,11 +379,11 @@ class CustomTreeCtrlDemo(wx.Panel):
 
     def buildTreeView(self):
         root = self.tree.AddRoot("test")
-        for catItem in self.parser.tsrCategory:
+        for catItem in self.parser.tsrCatRoot.subEntry:
             catNode = self.tree.AppendItem(root, catItem.label)
             self.tree.SetPyData(catNode, catItem)
 
-            for secItem in catItem.section:
+            for secItem in catItem.subEntry:
                 sectionNode = self.tree.AppendItem(catNode, secItem.label)
                 self.tree.SetPyData(sectionNode, secItem)
 
@@ -399,7 +394,6 @@ if __name__ == '__main__':
     fac = TsrCategory2Xml(fileName, outFileName)
     fac.setParser(parser)
     fac.xmlOutput()
-
 
     convert = Tsr2Xml(fileName, outFileName1)
 
