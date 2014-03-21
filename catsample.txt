@@ -1,0 +1,204 @@
+#System : Status_START
+#System : Status_END
+#System : Licenses_START
+#System : Licenses_END
+#System : Administration_START
+#System : Administration_END
+#System : SNMP_START
+#System : SNMP_END
+#System : Certificates_START
+#System : Certificates_END
+#System : Time_START
+#System : Time_END
+#System : Schedules_START
+#System : Schedules_END
+#System : Settings_START
+#System : Settings_END
+#System : Packet Monitor_START
+#System : Packet Monitor_END
+#System : Diagnostics_START
+#System : Diagnostics_END
+#Network : Interfaces_START
+#Network : Interfaces_END
+#Network : Failover & LB_START
+#Network : Failover & LB_END
+#Network : Zones_START
+#Network : Zones_END
+#Network : DNS_START
+#Network : DNS_END
+#Network : Address Objects_START
+#Network : Address Objects_END
+#Network : Services_START
+#Network : Services_END
+#Network : Routing_START
+#Network : Routing_END
+#Network : IPv6 Routing_START
+#Network : IPv6 Routing_END
+#Network : NAT Policies_START
+#Network : NAT Policies_END
+#Network : ARP_START
+#Network : ARP_END
+#Network : Neighbor Discovery_START
+#Network : Neighbor Discovery_END
+#Network : MAC-IP Anti-spoof_START
+#Network : MAC-IP Anti-spoof_END
+#Network : DHCP Server_START
+#Network : DHCP Server_END
+#Network : IPv6 DHCP_START
+#Network : IPv6 DHCP_END
+#Network : IP Helper_START
+#Network : IP Helper_END
+#Network : Web Proxy_START
+#Network : Web Proxy_END
+#Network : Dynamic DNS_START
+#Network : Dynamic DNS_END
+#Network : Network Monitor_START
+#Network : Network Monitor_END
+#3G/Modem : 3G/Modem_START
+#3G/Modem : 3G/Modem_END
+#Wireless : Wlan_START
+#Wireless : Wlan_END
+#Wireless : WLAN Virtual Access Point_START
+#Wireless : WLAN Virtual Access Point_END
+#SonicPoint : SonicPoints_START
+#SonicPoint : SonicPoints_END
+#SonicPoint : RF Monitoring_START
+#SonicPoint : RF Monitoring_END
+#SonicPoint : FairNet_START
+#SonicPoint : FairNet_END
+#Firewall : Access Rules_START
+#Firewall : Access Rules_END
+#Firewall : Application Firewall_START
+#Firewall : Application Firewall_END
+#Firewall : Bandwidth Objects_START
+#Firewall : Bandwidth Objects_END
+#Firewall Settings : Advanced_START
+#Firewall Settings : Advanced_END
+#Firewall Settings : BWM_START
+#Firewall Settings : BWM_END
+#Firewall Settings : Multicast_START
+#Firewall Settings : Multicast_END
+#Firewall Settings : QoS Mapping_START
+#Firewall Settings : QoS Mapping_END
+#Firewall Settings : SSL Control_START
+#Firewall Settings : SSL Control_END
+#DPI-SSL : Client SSL_START
+#DPI-SSL : Client SSL_END
+#DPI-SSL : Server SSL_START
+#DPI-SSL : Server SSL_END
+#VoIP : Settings_START
+#VoIP : Settings_END
+#VoIP : Call Status_START
+#VoIP : Call Status_END
+#Anti-Spam : Status_START
+#Anti-Spam : Status_END
+#Anti-Spam : Settings_START
+#Anti-Spam : Settings_END
+#Anti-Spam : Statistics_START
+#Anti-Spam : Statistics_END
+#Anti-Spam : RBL Filter_START
+#Anti-Spam : RBL Filter_END
+#Anti-Spam : Junk Box Settings_START
+#Anti-Spam : Junk Box Settings_END
+#Anti-Spam : Junk Box Summary_START
+#Anti-Spam : Junk Box Summary_END
+#Anti-Spam : User View Setup_START
+#Anti-Spam : User View Setup_END
+#Anti-Spam : Address Books_START
+#Anti-Spam : Address Books_END
+#Anti-Spam : Manage Users_START
+#Anti-Spam : Manage Users_END
+#Anti-Spam : LDAP Configuration_START
+#Anti-Spam : LDAP Configuration_END
+#Anti-Spam : Advanced_START
+#Anti-Spam : Advanced_END
+#Anti-Spam : Email Filtering_START
+#Anti-Spam : Email Filtering_END
+#VPN : Settings_START
+#VPN : Settings_END
+#VPN : Advanced_START
+#VPN : Advanced_END
+#VPN : DHCP over VPN_START
+#VPN : DHCP over VPN_END
+#VPN : L2TP Server_START
+#VPN : L2TP Server_END
+#SSL VPN : Status_START
+#SSL VPN : Status_END
+#SSL VPN : Server Settings_START
+#SSL VPN : Server Settings_END
+#SSL VPN : Portal Settings_START
+#SSL VPN : Portal Settings_END
+#SSL VPN : Client Settings_START
+#SSL VPN : Client Settings_END
+#SSL VPN : Client Routes_START
+#SSL VPN : Client Routes_END
+#SSL VPN : Virtual Office_START
+#SSL VPN : Virtual Office_END
+#Virtual Assist : Virtual Assist_START
+#Virtual Assist : Virtual Assist_END
+#Users : Status_START
+#Users : Status_END
+#Users : Settings_START
+#Users : Settings_END
+#Users : Local Users_START
+#Users : Local Users_END
+#Users : Local Groups_START
+#Users : Local Groups_END
+#Users : Single Sign On Authentication_START
+#Users : Single Sign On Authentication_END
+#Users : RADIUS_START
+#Users : RADIUS_END
+#Users : LDAP_START
+#Users : LDAP_END
+#Users : Guest Services_START
+#Users : Guest Services_END
+#Users : Guest Accounts_START
+#Users : Guest Accounts_END
+#Users : Guest Status_START
+#Users : Guest Status_END
+#High Availability : Settings_START
+#High Availability : Settings_END
+#High Availability : Advanced_START
+#High Availability : Advanced_END
+#High Availability : Monitoring_START
+#High Availability : Monitoring_END
+#High Availability : Stateful Sync_START
+#High Availability : Stateful Sync_END
+#High Availability : Active UTM_START
+#High Availability : Active UTM_END
+#Security Services : Summary_START
+#Security Services : Summary_END
+#Security Services : Content Filter_START
+#Security Services : Content Filter_END
+#Security Services : Client AV Enforcement_START
+#Security Services : Client AV Enforcement_END
+#Security Services : Gateway Anti-Virus_START
+#Security Services : Gateway Anti-Virus_END
+#Security Services : Intrusion Prevention_START
+#Security Services : Intrusion Prevention_END
+#Security Services : Anti-Spyware_START
+#Security Services : Anti-Spyware_END
+#Security Services : DEA_START
+#Security Services : DEA_END
+#WAN Acceleration : Bandwidth Optimization_START
+#WAN Acceleration : Bandwidth Optimization_END
+#WAN Acceleration : Bandwidth Optimization Device_START
+#WAN Acceleration : Bandwidth Optimization Device_END
+#Log : Log Monitor_START
+#Log : Log Monitor_END
+#Log : Syslog_START
+#Log : Syslog_END
+#Log : Automation_START
+#Log : Automation_END
+#Log : Reports_START
+#Log : Reports_END
+#Log : Name Resolution_START
+#Log : Name Resolution_END
+#Log : Analyzer_START
+#Log : Analyzer_END
+#Log : AppFlow_START
+#Log : AppFlow_END
+#Diagnostic : Internal Settings_START
+#Diagnostic : Internal Settings_END
+#Debug Information_START
+#Debug Information_END
