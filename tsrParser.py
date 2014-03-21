@@ -1,17 +1,11 @@
-__author__ = 'xyang'
 import wx
-import wx.lib.agw.customtreectrl as CT
 import wx.richtext
 import re
 
-
 fileName = "techSupport_0F5954_3-19.wri"
-#fileName = "11.txt"
 outFileName = 'tsrout.xml'
 outFileName1 = 'tsrout1.xml'
 
-#System : Status_START
-#System : Status_END
 
 class myConfiguration():
     parseOutRangedCat = False
@@ -42,7 +36,6 @@ class Tsr2Xml():
 
             if m:
                 g = m.groups()
-                print g
                 if 1:
                     if self.lastLabel != g[0]:
 
@@ -57,7 +50,7 @@ class Tsr2Xml():
                 if g[2] == "START":
                     self.outFd.write("<%s>\n" % g[1])
                 else:
-                    self.outFd.write("</%s>\n"% g[1])
+                    self.outFd.write("</%s>\n" % g[1])
             else:
                 self.outFd.write(lineStr)
                 pass
@@ -78,7 +71,6 @@ class TsrCategory2Xml():
     def setParser(self, parser):
         self.parser = parser
 
-
     def xmlSectionOutput(self, secItem):
         offStart = secItem.offStart
         offEnd = secItem.offEnd
@@ -88,13 +80,10 @@ class TsrCategory2Xml():
 
         tag = self.xmlGenTag(secItem.label)
 
-        self.xmlWriteString("<%s>\n\n"%tag)
-
-        print secItem.label, offStart, offEnd
+        self.xmlWriteString("<%s>\n\n" % tag)
         self.xmlCopyData(offStart, offEnd)
-        self.xmlWriteString("</%s>\n\n"%tag)
+        self.xmlWriteString("</%s>\n\n" % tag)
         self.inOffset = offEnd
-
 
     def xmlGenTag(self, label):
 
@@ -102,30 +91,29 @@ class TsrCategory2Xml():
             return label
         else:
             if label[0].isdigit():
-                label = "_"+label
+                label = "_" + label
 
-            return label.replace("&", "and").replace(" ", "_").replace("/","_")
+            return label.replace("&", "and").replace(" ", "_").replace("/", "_")
 
     def xmlOutput(self):
         tsrCategory = self.parser.tsrCatRoot
 
         xmlDesc = r'<?xml version="1.0" encoding="ISO-8859-1"?>'
 
-        self.xmlWriteString(xmlDesc+"\n")
+        self.xmlWriteString(xmlDesc + "\n")
         self.xmlWriteString("<root>\n")
         for cat in tsrCategory.subEntry:
             offStart = cat.offStart
-            offEnd = cat.offEnd
             if self.inOffset < offStart:
                 self.xmlCopyData(self.inOffset, offStart)
                 self.inOffset = offStart
 
             tag = self.xmlGenTag(cat.label)
 
-            self.xmlWriteString("<%s>\n\n"%tag)
+            self.xmlWriteString("<%s>\n\n" % tag)
             for secItem in cat.subEntry:
                 self.xmlSectionOutput(secItem)
-            self.xmlWriteString("</%s>\n\n"%tag)
+            self.xmlWriteString("</%s>\n\n" % tag)
 
         self.xmlWriteString("</root>\n")
         #self.outFd.close()
@@ -142,22 +130,8 @@ class TsrCategory2Xml():
             strTmp = strTmp.replace("&", "&amp;").replace("<", "&lt;"). \
                 replace("\"", "&quot;").replace(">", "&gt;")
 
-
         self.outFd.write(strTmp)
-
         self.inOffset = end
-
-        # while True:
-        #     offStart = fd.tell()
-        #     lineStr = fd.readline()
-        #     offEnd = fd.tell()
-        #     if lineStr == '':
-        #         break
-
-        pass
-
-
-
 
 
 class TsrElemNodeEntry():
@@ -173,11 +147,7 @@ class TsrElemNodeEntry():
 
         self.entryTagOpen(filePosInfo)
 
-
     def updateEntry(self, isOpen, label, filePosInfo):
-        #catStr, sectionStr, isOpen = catInfo
-        isTagOpen = False
-
         curNode = self.curSubNode
         if curNode and curNode.isEntryMatch(label):
             pass
@@ -185,14 +155,10 @@ class TsrElemNodeEntry():
             self.createNewEntry(label, filePosInfo)
 
         if isOpen:
-            isTagOpen = True
-            print "open: ", label, filePosInfo
             self.curSubNode.entryTagOpen(filePosInfo)
 
         else:
-            print "close: ", label, filePosInfo
             self.curSubNode.entryTagClose(filePosInfo)
-
         return self.curSubNode
 
     def getCurSubNode(self):
@@ -204,11 +170,8 @@ class TsrElemNodeEntry():
         self.curSubNode = newNode
         return newNode
 
-    def initEntry(self ):
+    def initEntry(self):
         pass
-    #
-    # def updateEntry(self):
-    #     pass
 
     def entryTagOpen(self, filePosInfo):
         offStart, offEnd, iLine = filePosInfo
@@ -230,24 +193,20 @@ class TsrElemNodeEntry():
     def dumpNodeInfo(self, level):
         pad = "".join(['    ' for i in range(level)])
         outFormat = "%-*s  from %d to %d "
-        print pad, outFormat%(50-len(pad), self.label, self.lineStart + 1 , self.lineEnd + 1)
+        print pad, outFormat % (50 - len(pad), self.label, self.lineStart + 1, self.lineEnd + 1)
 
     def dumpEntryInfo(self, level):
         self.dumpNodeInfo(level)
-
         for subNode in self.subEntry:
             subNode.dumpEntryInfo(level + 1)
 
 
 class TsrFileParser():
     def __init__(self, fileName):
-        self.tsrCatRoot = TsrElemNodeEntry("root", (0,0,0))
+        self.tsrCatRoot = TsrElemNodeEntry("root", (0, 0, 0))
         self.outRangeCat = None
         self.isTagOpen = False
         self.parseTsrFile(fileName)
-
-    def updateCategoryEntry(self, catInfo, filePosInfo):
-        return self.tsrCatRoot.updateEntry(catInfo, filePosInfo)
 
     def getCategory(self, lineStr, offStart, offEnd, iLine):
         #System : Status_START
@@ -277,40 +236,30 @@ class TsrFileParser():
             if m:
                 g = m.groups()
                 if g[-1] == 'START':
-                    catInfo = [g[0], g[1], 1]
                     isOpen = 1
                 else:
-                    catInfo = [g[0], g[1], 0]
                     isOpen = 0
 
                 findMatch = True
 
                 if isOpen and self.isTagOpen:
-                    # self.outRangeCat.entryTagClose([filePosInfo[0], filePosInfo[0], filePosInfo[2]-1])
-                    # self.outRangeCat = None
                     if self.tsrCatRoot.getCurSubNode().isEntryMatch("unknown"):
-                        self.tsrCatRoot.updateEntry(0, "unknown", [filePosInfo[0], filePosInfo[0], filePosInfo[2]-1])
+                        self.tsrCatRoot.updateEntry(0, "unknown", [filePosInfo[0], filePosInfo[0], filePosInfo[2] - 1])
 
                 curNode = self.tsrCatRoot.updateEntry(isOpen, g[0], filePosInfo)
-                curNode = curNode.updateEntry(isOpen, g[1], filePosInfo)
+                curNode.updateEntry(isOpen, g[1], filePosInfo)
                 self.isTagOpen = isOpen
 
         if not self.isTagOpen and not findMatch:
-
             if myConfiguration.parseOutRangedCat:
                 return
 
             if lineStr.strip() != "":
                 self.tsrCatRoot.updateEntry(1, "unknown", filePosInfo)
                 self.isTagOpen = True
-                # if not self.outRangeCat:
-                #     self.outRangeCat = self.tsrCatRoot.createNewEntry("unknown", filePosInfo)
-
-
-                #print iLine, lineStr.strip()
 
     def parseTsrFile(self, fileName):
-        fd = open(fileName, "rU")
+        fd = open(fileName, "rb")
         self.fd = fd
         iLine = 0
         while True:
@@ -347,8 +296,9 @@ class CustomTreeCtrlDemo(wx.Panel):
 
         splitter = wx.SplitterWindow(self, -1, style=wx.CLIP_CHILDREN | wx.SP_LIVE_UPDATE | wx.SP_3D)
         # Create the CustomTreeCtrl, using a derived class defined below
-        self.tree = wx.TreeCtrl(splitter, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TR_DEFAULT_STYLE )
-        self.richText = wx.richtext.RichTextCtrl(splitter, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 | wx.VSCROLL|wx.HSCROLL|wx.NO_BORDER|wx.WANTS_CHARS)
+        self.tree = wx.TreeCtrl(splitter, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TR_DEFAULT_STYLE)
+        self.richText = wx.richtext.RichTextCtrl(splitter, wx.ID_ANY, "", wx.DefaultPosition, wx.DefaultSize,
+                                                 0 | wx.VSCROLL | wx.HSCROLL | wx.NO_BORDER | wx.WANTS_CHARS)
         self.richText.SetFont(wx.Font(wx.NORMAL_FONT.GetPointSize(), 70, 90, 90, False, "Courier New"))
 
         splitter.SplitVertically(self.tree, self.richText, 300)
@@ -361,7 +311,7 @@ class CustomTreeCtrlDemo(wx.Panel):
         self.tree.Bind(wx.EVT_TREE_SEL_CHANGED, self.onTreeSelChanged)
         self.buildTreeView()
 
-    def onTreeSelChanged( self, event ):
+    def onTreeSelChanged(self, event):
             root = self.tree.GetRootItem()
             item = event.GetItem()
 
@@ -374,7 +324,6 @@ class CustomTreeCtrlDemo(wx.Panel):
             event.Skip()
 
     def doWrite(self, data):
-        print "doWrite"
         self.richText.WriteText(data)
 
     def buildTreeView(self):
@@ -389,6 +338,7 @@ class CustomTreeCtrlDemo(wx.Panel):
 
 if __name__ == '__main__':
     parser = TsrFileParser(fileName)
+
     parser.dumpCategory()
 
     fac = TsrCategory2Xml(fileName, outFileName)
@@ -397,12 +347,8 @@ if __name__ == '__main__':
 
     convert = Tsr2Xml(fileName, outFileName1)
 
-
-
     app = wx.App(0)
     frame = wx.Frame(None)
     panel = CustomTreeCtrlDemo(frame, parser)
     frame.Show()
     app.MainLoop()
-
-
